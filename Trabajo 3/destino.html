@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destinos de la Aerolínea</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('destinos.jpg') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 40px;
+        }
+        .button-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .button-container button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .button-container button:hover {
+            background-color: #0056b3;
+        }
+        .destinations {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .destination {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            padding: 0;
+            margin: 10px;
+            width: 250px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+        .destination:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        .destination img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .destination:hover img {
+            transform: scale(1.1);
+        }
+        .destination .info {
+            padding: 20px;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        .destination:hover .info {
+            background-color: #0056b3;
+        }
+        .info h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .info p {
+            margin: 10px 0 0;
+            font-size: 14px;
+        }
+        .description {
+            text-align: center;
+            margin: 20px auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            display: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .description h2 {
+            color: #007bff;
+            margin-top: 0;
+        }
+        .highlight {
+            color: #d9534f;
+            font-weight: bold;
+        }
+        header {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 10px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+nav {
+    display: flex;
+    align-items: center;
+}
+
+nav .logo img {
+    width: 100px;
+    height: auto;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+    margin-left: 20px;
+    flex-grow: 1;
+}
+
+nav a {
+    text-decoration: none;
+    color: #333;
+}
+
+nav .auth-buttons {
+    margin-left: auto;
+}
+
+nav button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    border: none;
+    background-color: #0073e6;
+    color: white;
+    cursor: pointer;
+}
+.footer-content {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(68, 65, 65, 0.815);
+}
+
+.footer-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-basis: 100%;
+}
+
+.footer-section .social-icon img {
+    width: 50px;
+    height: auto;
+    filter: grayscale(100%);
+    transition: filter 0.3s;
+}
+
+.footer-section .social-icon img:hover {
+    filter: grayscale(0%);
+}
+
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="codigopagina.html">
+                    <img src="logo.png" alt="Logo de la empresa">
+                </a>
+            </div>
+            <ul>
+                <li><a href="boletoN.html">Vuelos</a></li>
+                <li><a href="destino.html">Destinos</a></li>
+                <li><a href="ofertas.html">Paquetes de Oferta</a></li>    
+                <li><a href="contactenos.html">Contactanos</a></li>
+                <li><a href="Programadores.html">Programadores</a></li>
+            </ul>
+        </nav>
+    </header>
+    <h1>Destinos de la Aerolínea</h1>
+    <div class="button-container">
+        <button onclick="showDestinations('national')">Nacional</button>
+        <button onclick="showDestinations('international')">Internacional</button>
+    </div>
+    <div id="destinations" class="destinations"></div>
+    <div id="description" class="description"></div>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <a href="https://www.instagram.com/goplaceairline/" target="_blank" class="social-icon">
+                    <img src="instagram.png" alt="Instagram">
+                </a>
+                <a href="https://www.facebook.com/profile.php?id=61562936154988&mibextid=qi2Omg&rdid=pQWjlfLTvWsYz27n&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2FCo5dn1MjLCJoSS8o%2F%3Fmibextid%3Dqi2Omg" target="_blank" class="social-icon">
+                    <img src="facebook.png" alt="Facebook">
+                </a>
+                <a href="https://x.com/Go_Place_Air" target="_blank" class="social-icon">
+                    <img src="twitter.png" alt="Twitter">
+                </a>
+            </div>
+        </div>
+    </footer>
+    <script>
+const destinations = {
+    national: [
+        { name: 'Amazonas', img: 'imagenes distritos/amazonas.jpg', desc: '<h2>Amazonas</h2><p>Conocido por sus <span class="highlight">impresionantes paisajes naturales</span>, Amazonas alberga la famosa <strong>Fortaleza de Kuélap</strong> y las majestuosas <strong>Cataratas de Gocta</strong>.</p>' },
+        { name: 'Áncash', img: 'imagenes distritos/ancash.jpg', desc: '<h2>Áncash</h2><p>Hogar de la <span class="highlight">Cordillera Blanca</span> y el famoso <strong>Huascarán</strong>, el pico más alto de Perú. Explora el <strong>Parque Nacional Huascarán</strong> y la antigua ciudad de <strong>Chavín de Huántar</strong>.</p>' },
+        { name: 'Apurímac', img: 'imagenes distritos/apurimac.jpg', desc: '<h2>Apurímac</h2><p>Conocido por su <span class="highlight">belleza escénica</span> y sus profundos cañones, Apurímac es ideal para los amantes de la naturaleza. No te pierdas el <strong>cañón del Apurímac</strong> y las ruinas de <strong>Choquequirao</strong>.</p>' },
+        { name: 'Arequipa', img: 'imagenes distritos/arequipa.jpg', desc: '<h2>Arequipa</h2><p>La <span class="highlight">"Ciudad Blanca"</span>, famosa por sus edificios de sillar y su impresionante <strong>Volcán Misti</strong>. Visita el <strong>Monasterio de Santa Catalina</strong> y el <strong>Cañoñ del Colca</strong>.</p>' },
+        { name: 'Ayacucho', img: 'imagenes distritos/ayacucho.jpg', desc: '<h2>Ayacucho</h2><p>Conocido por su <span class="highlight">historia colonial</span> y sus celebraciones de Semana Santa. Explora sus numerosas iglesias coloniales y el <strong>Santuario Histórico de la Pampa de Ayacucho</strong>.</p>' },
+        { name: 'Cajamarca', img: 'imagenes distritos/cajamarca.jpg', desc: '<h2>Cajamarca</h2><p>Famoso por sus <span class="highlight">baños termales</span> y su rica historia. Visita los <strong>Baños del Inca</strong>, el <strong>Cuarto del Rescate</strong> y las <strong>ventanillas de Otuzco</strong>.</p>' },
+        { name: 'Cusco', img: 'imagenes distritos/cusco.jpg', desc: '<h2>Cusco</h2><p>La <span class="highlight">antigua capital del Imperio Inca</span>, con una impresionante mezcla de cultura inca y colonial. No te pierdas la <strong>Plaza de Armas</strong> y el cercano <strong>Machu Picchu</strong>.</p>' },
+        { name: 'Huancavelica', img: 'imagenes distritos/huancavelica.jpg', desc: '<h2>Huancavelica</h2><p>Conocida por sus <span class="highlight">paisajes montañosos</span> y su arquitectura colonial. Explora la <strong>Iglesia de San Francisco</strong> y las <strong>minas de Santa Bárbara</strong>.</p>' },
+        { name: 'Huánuco', img: 'imagenes distritos/huanuco.jpg', desc: '<h2>Huánuco</h2><p>Famoso por sus <span class="highlight">paisajes diversos</span> y su rica historia. Visita el <strong>Templo de Kotosh</strong> y disfruta de la <strong>fiesta de San Juan</strong>.</p>' },
+        { name: 'Ica', img: 'imagenes distritos/ica.jpg', desc: '<h2>Ica</h2><p>Conocida por sus <span class="highlight">vinos y piscos</span>, así como por su cercano <strong>desierto de Huacachina</strong>. Explora la <strong>Reserva Nacional de Paracas</strong> y las <strong>Líneas de Nazca</strong>.</p>' },
+        { name: 'Junín', img: 'imagenes distritos/junin.jpg', desc: '<h2>Junín</h2><p>Ubicado en el <span class="highlight">centro de Perú</span>, conocido por su belleza natural y sitios históricos. Visita el <strong>Parque Nacional de Yanachaga-Chemillén</strong> y el <strong>Valle del Mantaro</strong>.</p>' },
+        { name: 'La Libertad', img: 'imagenes distritos/lalibertad.jpg', desc: '<h2>La Libertad</h2><p>Famosa por sus <span class="highlight">sitios arqueológicos</span> como la <strong>ciudad de Chan Chan</strong> y el <strong>Templo del Sol y la Luna</strong>. Disfruta de las playas de <strong>Huanchaco</strong>.</p>' },
+        { name: 'Lambayeque', img: 'imagenes distritos/lambayeque.jpg', desc: '<h2>Lambayeque</h2><p>Hogar de importantes <span class="highlight">sitios arqueológicos</span> y museos. Visita el <strong>Museo Tumbas Reales de Sipán</strong> y el <strong>Complejo Arqueológico de Túcume</strong>.</p>' },
+        { name: 'Lima', img: 'imagenes distritos/lima.jpg', desc: '<h2>Lima</h2><p>La <span class="highlight">capital de Perú</span>, conocida por su rica historia y su exquisita gastronomía. Explora el <strong>Centro Histórico</strong> y el <strong>Barrio de Miraflores</strong>.</p>' },
+        { name: 'Loreto', img: 'imagenes distritos/loreto.jpg', desc: '<h2>Loreto</h2><p>La región más grande de Perú, famosa por su <span class="highlight">selva amazónica</span>. Visita la ciudad de <strong>Iquitos</strong> y explora la <strong>Reserva Nacional Pacaya Samiria</strong>.</p>' },
+        { name: 'Madre de Dios', img: 'imagenes distritos/madrededios.jpg', desc: '<h2>Madre de Dios</h2><p>Conocida como la <span class="highlight">"Capital de la Biodiversidad"</span> de Perú, hogar de la <strong>Reserva Nacional Tambopata</strong> y el <strong>Parque Nacional Manu</strong>.</p>' },
+        { name: 'Moquegua', img: 'imagenes distritos/moquegua.jpg', desc: '<h2>Moquegua</h2><p>Conocida por sus <span class="highlight">vinos y piscos</span>, así como por su arquitectura colonial. Visita el <strong>Valle de los Volcanes</strong> y el <strong>Cerro Baúl</strong>.</p>' },
+        { name: 'Pasco', img: 'imagenes distritos/pasco.jpg', desc: '<h2>Pasco</h2><p>Una región minera con una rica <span class="highlight">historia colonial</span>. Explora la <strong>Catedral de Cerro de Pasco</strong> y la <strong>Laguna de Chinchaycocha</strong>.</p>' },
+        { name: 'Piura', img: 'imagenes distritos/piura.jpg', desc: '<h2>Piura</h2><p>Famosa por sus <span class="highlight">hermosas playas</span> y su clima cálido. Disfruta de <strong>Máncora</strong> para el surf y la vida nocturna, y relájate en las playas de <strong>Vichayito</strong>.</p>' },
+        { name: 'Puno', img: 'imagenes distritos/puno.jpg', desc: '<h2>Puno</h2><p>Conocida por su <span class="highlight">cultura andina</span> y el <strong>Lago Titicaca</strong>. Visita las <strong>Islas Flotantes de los Uros</strong> y celebra la <strong>Fiesta de la Candelaria</strong>.</p>' },
+        { name: 'San Martín', img: 'imagenes distritos/sanmartin.jpg', desc: '<h2>San Martín</h2><p>Ubicado en la <span class="highlight">selva alta</span>, conocido por su biodiversidad. Explora el <strong>Parque Nacional del Río Abiseo</strong> y las <strong>Cataratas de Ahuashiyacu</strong>.</p>'},
+        { name: 'Tacna', img: 'imagenes distritos/tacna.jpg', desc: '<h2>Tacna</h2><p>Conocida por su historia y su rica gastronomía. Visita el <strong>Monumento al Soldado Desconocido</strong> y el <strong>Parque Nacional Bahuaja-Sonene</strong>.</p>' },
+    { name: 'Tumbes', img: 'imagenes distritos/tumbes.jpg', desc: '<h2>Tumbes</h2><p>Famosa por sus playas de arena blanca y su biodiversidad marina. Disfruta del <strong>Bosque de Manglares de Tumbes</strong> y las <strong>Islas del Amor</strong>.</p>' },
+    { name: 'Ucayali', img: 'imagenes distritos/ucayali.jpg', desc: '<h2>Ucayali</h2><p>Conocida por su selva amazónica y el río Ucayali. Explora la <strong>Reserva Nacional Pacaya-Samiria</strong> y el <strong>Centro de Rescate de Manatíes</strong>.</p>' }
+    ],
+    international: [
+        { 
+            name: 'Buenos Aires', 
+            img: 'imagenes distritos/buenosaires.jpg', 
+            desc: '<h2>Buenos Aires</h2><p>La <span class="highlight">capital de Argentina</span>, Buenos Aires es conocida por su vibrante vida nocturna, su arquitectura europea y su rica escena cultural. Visita el <strong>Barrio de La Boca</strong>, el <strong>Teatro Colón</strong> y disfruta de un auténtico <strong>tango argentino</strong>.</p>'
+        },
+        { 
+            name: 'Nueva York', 
+            img: 'imagenes distritos/nuevayork.jpg', 
+            desc: '<h2>Nueva York</h2><p>La <span class="highlight">"Gran Manzana"</span>, Nueva York es una de las ciudades más icónicas del mundo. Explora <strong>Central Park</strong>, sube al mirador del <strong>Empire State Building</strong> y disfruta de un espectáculo en <strong>Broadway</strong>.</p>'
+        },
+        { 
+            name: 'París', 
+            img: 'imagenes distritos/paris.jpg', 
+            desc: '<h2>París</h2><p>La <span class="highlight">capital de Francia</span>, conocida como la "Ciudad del Amor". Visita la <strong>Torre Eiffel</strong>, el <strong>Museo del Louvre</strong> y pasea por los <strong>Campos Elíseos</strong>.</p>'
+        },
+        { 
+            name: 'Tokio', 
+            img: 'imagenes distritos/tokio.jpg', 
+            desc: '<h2>Tokio</h2><p>La <span class="highlight">capital de Japón</span>, un vibrante crisol de tecnología avanzada y tradiciones antiguas. No te pierdas el <strong>Templo Senso-ji</strong> y la animada zona de <strong>Shibuya</strong>.</p>'
+        },
+        { 
+            name: 'Londres', 
+            img: 'imagenes distritos/londres.jpg', 
+            desc: '<h2>Londres</h2><p>La <span class="highlight">capital del Reino Unido</span>, famosa por sus históricos monumentos como el <strong>Big Ben</strong>, el <strong>Palacio de Buckingham</strong> y el <strong>Torre de Londres</strong>.</p>'
+        },
+        { 
+            name: 'Roma', 
+            img: 'imagenes distritos/roma.jpg', 
+            desc: '<h2>Roma</h2><p>La <span class="highlight">capital de Italia</span>, una ciudad rica en historia y cultura. Visita el <strong>Coliseo</strong>, el <strong>Vaticano</strong> y la <strong>Fontana di Trevi</strong>.</p>'
+        },
+        { 
+            name: 'Bangkok', 
+            img: 'imagenes distritos/bangkok.jpg', 
+            desc: '<h2>Bangkok</h2><p>La <span class="highlight">capital de Tailandia</span>, conocida por sus ornamentados templos y su vibrante vida nocturna. Explora el <strong>Gran Palacio</strong> y el <strong>Templo del Buda Esmeralda</strong>.</p>'
+        },
+        { 
+            name: 'Sídney', 
+            img: 'imagenes distritos/sidney.jpg', 
+            desc: '<h2>Sídney</h2><p>La <span class="highlight">ciudad más grande de Australia</span>, famosa por la <strong>Ópera de Sídney</strong>, el <strong>Puente del Puerto de Sídney</strong> y sus hermosas playas.</p>'
+        }
+    ]
+};
+
+        function showDestinations(category) {
+            const container = document.getElementById('destinations');
+            container.innerHTML = '';
+            destinations[category].forEach(destination => {
+                const div = document.createElement('div');
+                div.className = 'destination';
+                div.innerHTML = `
+                    <img src="${destination.img}" alt="${destination.name}">
+                    <div class="info">
+                        <h3>${destination.name}</h3>
+                        <p>Haz clic para más información</p>
+                    </div>
+                `;
+                div.addEventListener('click', () => {
+                    showDescription(destination.desc);
+                });
+                container.appendChild(div);
+            });
+        }
+
+        function showDescription(description) {
+            const descDiv = document.getElementById('description');
+            descDiv.innerHTML = description;
+            descDiv.style.display = 'block';
+        }
+
+        window.onload = () => {
+            showDestinations('national');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compra de Boleto de Avión</title>
+    <style>
+
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: url('boleton.jpg') no-repeat center center fixed;
+    background-size: cover;
+    position: relative;
+    color: #333; 
+}
+body {
+    background-image: 'boleton.jpg';
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+
+header, footer {
+    background-color: rgba(0, 0, 0, 0.7); 
+    color: white;
+    text-align: center;
+    padding: 1em 0;
+    position: relative;
+    z-index: 1;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 10px 20px;
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+}
+
+nav .logo img {
+    width: 100px;
+    height: auto;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+    margin-left: 20px;
+    flex-grow: 1;
+}
+
+nav a {
+    text-decoration: none;
+    color: #333;
+}
+
+nav .auth-buttons {
+    margin-left: auto;
+}
+
+nav button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    border: none;
+    background-color: #0073e6;
+    color: white;
+    cursor: pointer;
+}
+
+main {
+    padding: 20px;
+    position: center;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+form {
+    max-width: 600px;
+    margin: auto;
+    background: #d7d7d7;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+}
+
+input[type="submit"] {
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+input[type="submit"]:hover {
+    background-color: #4cae4c;
+}
+
+.seat-map {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 300px;
+    margin: 20px auto;
+}
+
+.seat {
+    width: 40px;
+    height: 40px;
+    margin: 5px;
+    background-color: #ddd;
+    text-align: center;
+    line-height: 40px;
+    cursor: pointer;
+}
+
+.selected {
+    background-color: #5cb85c;
+    color: white;
+}
+
+.price {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.message {
+    color: red;
+    margin-top: 10px;
+}
+
+.escalas {
+    margin-top: 10px;
+}
+.footer-content {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(68, 65, 65, 0.815);
+}
+
+.footer-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-basis: 100%;
+}
+
+.footer-section .social-icon img {
+    width: 50px;
+    height: auto;
+    filter: grayscale(100%);
+    transition: filter 0.3s;
+}
+
+.footer-section .social-icon img:hover {
+    filter: grayscale(0%);
+}
+
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const { jsPDF } = window.jspdf;
+            const seats = document.querySelectorAll('.seat');
+            const selectedSeatsInput = document.getElementById('asientos');
+            const fechaInput = document.getElementById('fecha');
+            const origenInput = document.getElementById('origen');
+            const destinoInput = document.getElementById('destino');
+            const tipoVueloSelect = document.getElementById('tipo_vuelo');
+            const horarioSelect = document.getElementById('horario');
+            const claseSelect = document.getElementById('clase');
+            const monedaSelect = document.getElementById('moneda');
+            const escalasDiv = document.getElementById('escalas');
+            const precioSpan = document.getElementById('precio');
+            const messageDiv = document.getElementById('message');
+            const precioBase = 560;
+            const tipoCambio = 3.7; 
+
+            seats.forEach(seat => {
+                seat.addEventListener('click', function() {
+                    this.classList.toggle('selected');
+                    const selectedSeats = document.querySelectorAll('.seat.selected');
+                    const selectedSeatsArray = Array.from(selectedSeats).map(s => s.innerText);
+                    selectedSeatsInput.value = selectedSeatsArray.join(', ');
+                    calcularPrecio();
+                });
+            });
+
+            fechaInput.addEventListener('change', validarFecha);
+            origenInput.addEventListener('change', mostrarTiposDeVuelo);
+            destinoInput.addEventListener('change', mostrarTiposDeVuelo);
+            tipoVueloSelect.addEventListener('change', mostrarEscalas);
+            claseSelect.addEventListener('change', calcularPrecio);
+            monedaSelect.addEventListener('change', calcularPrecio);
+
+            function validarFecha() {
+                const fechaSeleccionada = new Date(fechaInput.value);
+                const fechaActual = new Date();
+                const fechaLimite = new Date();
+                fechaLimite.setMonth(fechaActual.getMonth() + 5);
+                messageDiv.textContent = '';
+
+                if (fechaSeleccionada < fechaActual) {
+                    messageDiv.textContent = 'La fecha ya ha pasado.';
+                } else if (fechaSeleccionada > fechaLimite) {
+                    messageDiv.textContent = 'No hay viajes programados para esas fechas aún.';
+                }
+            }
+
+            function mostrarTiposDeVuelo() {
+                const origen = origenInput.value;
+                const destino = destinoInput.value;
+
+                if (origen && destino) {
+                    tipoVueloSelect.innerHTML = `
+                        <option value="directo">Directo</option>
+                        <option value="escalas">Con Escalas</option>
+                    `;
+                    mostrarHorarios();
+                } else {
+                    tipoVueloSelect.innerHTML = '<option value="">Seleccione origen y destino</option>';
+                    horarioSelect.innerHTML = '<option value="">Seleccione horario</option>';
+                }
+            }
+
+            function mostrarHorarios() {
+                horarioSelect.innerHTML = `
+                    <option value="8:00">8:00 AM</option>
+                    <option value="10:00">10:00 AM</option>
+                    <option value="12:00">12:00 PM</option>
+                    <option value="14:00">2:00 PM</option>
+                `;
+            }
+
+            function mostrarEscalas() {
+                const tipoVuelo = tipoVueloSelect.value;
+                const origen = origenInput.value;
+                const destino = destinoInput.value;
+                escalasDiv.innerHTML = '';
+
+                if (tipoVuelo === 'escalas') {
+                    const departamentos = ["amazonas", "ancash", "apurimac", "arequipa", "ayacucho", "cajamarca", "callao", "cusco", "huancavelica", "huanuco", "ica", "junin", "la_libertad", "lambayeque", "lima", "loreto", "madre_de_dios", "moquegua", "pasco", "piura", "puno", "san_martin", "tacna", "tumbes", "ucayali"];
+                    const escalasPosibles = departamentos.filter(depto => depto !== origen && depto !== destino);
+                    const numEscalas = Math.floor(Math.random() * 3) + 1;
+                    const escalasSeleccionadas = [];
+
+                    for (let i = 0; i < numEscalas; i++) {
+                        const index = Math.floor(Math.random() * escalasPosibles.length);
+                        escalasSeleccionadas.push(escalasPosibles.splice(index, 1)[0]);
+                    }
+
+                    escalasDiv.innerHTML = `<h3>Escalas:</h3><ul>${escalasSeleccionadas.map(escala => `<li>${escala.charAt(0).toUpperCase() + escala.slice(1)}</li>`).join('')}</ul>`;
+                }
+            }
+
+            function calcularPrecio() {
+                const selectedSeats = document.querySelectorAll('.seat.selected').length;
+                const tipoVuelo = tipoVueloSelect.value;
+                const clase = claseSelect.value;
+                const moneda = monedaSelect.value;
+                let multiplicador = 1;
+
+                if (tipoVuelo === 'directo') {
+                    multiplicador += 0.2;
+                }
+
+                if (clase === 'premium') {
+                    multiplicador += 1;
+                } else if (clase === 'ejecutiva') {
+                    multiplicador += 0.6;
+                }
+
+                let precioTotal = selectedSeats * precioBase * multiplicador;
+
+                if (moneda === 'dolares') {
+                    precioTotal /= tipoCambio;
+                }
+
+                precioSpan.textContent = `Precio Total: ${moneda === 'soles' ? 'S/.' : '$'}${precioTotal.toFixed(2)}`;
+            }
+
+            document.querySelector('form').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+                const datosVuelo = {
+                    nombre: document.getElementById('nombre').value,
+                    apellido: document.getElementById('apellido').value,
+                    email: document.getElementById('email').value,
+                    telefono: document.getElementById('telefono').value,
+                    origen: origenInput.value,
+                    destino: destinoInput.value,
+                    fecha: fechaInput.value,
+                    asientos: selectedSeatsInput.value,
+                    tipoVuelo: tipoVueloSelect.value,
+                    horario: horarioSelect.value,
+                    clase: claseSelect.value,
+                    precio: precioSpan.textContent
+                };
+
+                carrito.push(datosVuelo);
+                localStorage.setItem('carrito', JSON.stringify(carrito));
+
+                generarPDF(datosVuelo);
+
+                alert('Vuelo añadido a la pagina principal');
+                window.location.href = 'codigopagina.html';
+            });
+            function generarPDF(datos) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Crear gradiente para el encabezado
+    const grad = doc.context2d.createLinearGradient(0, 0, doc.internal.pageSize.getWidth(), 0);
+    grad.addColorStop(0, '#003366');
+    grad.addColorStop(1, '#FFFFFF');
+    doc.context2d.fillStyle = grad;
+    doc.context2d.fillRect(0, 0, doc.internal.pageSize.getWidth(), 80); // Aumentar la altura del encabezado aquí
+
+    // Encabezado del PDF
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(16);
+    doc.text('BOLETO DE AVIÓN', 15, 20);
+    doc.setFontSize(12);
+    doc.text('GO PLACE AIRLINE', 15, 26);
+
+    // Información del pasajero
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(12);
+    doc.text(`Pasajero: ${datos.nombre} ${datos.apellido}`, 15, 40);
+    doc.text(`Fecha: ${datos.fecha}`, 15, 50);
+
+    // Información del vuelo
+    doc.setFontSize(16);
+    doc.text('Origen:', 15, 60); // Etiqueta "Origen"
+    doc.text(`${datos.origen}`, 15, 70);
+    doc.text('Destino:', 80, 60); // Etiqueta "Destino"
+    doc.text(`${datos.destino}`, 80, 70);
+    doc.setFontSize(12);
+    doc.text('Hora de abordaje', 145, 60);
+    doc.text(`${datos.horario}`, 145, 70);
+
+    // Dibujar el rectángulo para la información adicional
+    doc.setDrawColor(50, 90, 180);
+    doc.setTextColor(0, 0, 0);
+    doc.rect(10, 100, 190, 100); // Cambiar el tamaño y la posición del rectángulo aquí
+
+    // Color de fondo para la sección del boleto
+    doc.setFillColor(200, 220, 255);
+    doc.rect(10, 100, 190, 80, 'F'); // Cambiar el tamaño y la posición del fondo azul aquí
+
+    // Información adicional del vuelo
+    doc.setFontSize(12);
+    doc.text(`Asientos: ${datos.asientos}`, 15, 110);
+    doc.text(`Tipo de Vuelo: ${datos.tipoVuelo}`, 15, 120);
+    doc.text(`Clase: ${datos.clase}`, 15, 130);
+    doc.text(`Precio: ${datos.precio}`, 15, 140);
+
+    // Información de contacto
+    doc.setFontSize(12);
+    doc.text(`Email: ${datos.email}`, 15, 150);
+    doc.text(`Teléfono: ${datos.telefono}`, 15, 160);
+
+    doc.save('detalle_vuelo.pdf');
+}
+        });
+    </script>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="codigopagina.html">
+                    <img src="logo.png" alt="Logo de la empresa">
+                </a>
+            </div>
+            <ul>
+                <li><a href="boletoN.html">Vuelos</a></li>
+                <li><a href="destino.html">Destinos</a></li>
+                <li><a href="ofertas.html">Paquetes de Oferta</a></li>    
+                <li><a href="contactenos.html">Contactanos</a></li>
+                <li><a href="Programadores.html">Programadores</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h1>Compra de Boleto de Avión</h1>
+        <form>
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required>
+            
+            <label for="apellido">Apellido:</label>
+            <input type="text" id="apellido" name="apellido" required>
+            
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            
+            <label for="telefono">Teléfono:</label>
+            <input type="tel" id="telefono" name="telefono" required>
+            
+            <label for="origen">Origen:</label>
+            <select id="origen" name="origen" required>
+                <option value="Amazonas">Amazonas</option>
+                <option value="Áncash">Áncash</option>
+                <option value="Apurímac">Apurímac</option>
+                <option value="Arequipa">Arequipa</option>
+                <option value="Ayacucho">Ayacucho</option>
+                <option value="Cajamarca">Cajamarca</option>
+                <option value="Callao">Callao</option>
+                <option value="Cusco">Cusco</option>
+                <option value="Huancavelica">Huancavelica</option>
+                <option value="Huánuco">Huánuco</option>
+                <option value="Ica">Ica</option>
+                <option value="Junín">Junín</option>
+                <option value="La Libertad">La Libertad</option>
+                <option value="Lambayeque">Lambayeque</option>
+                <option value="Lima">Lima</option>
+                <option value="Loreto">Loreto</option>
+                <option value="Madre de Dios">Madre de Dios</option>
+                <option value="Moquegua">Moquegua</option>
+                <option value="Pasco">Pasco</option>
+                <option value="Piura">Piura</option>
+                <option value="Puno">Puno</option>
+                <option value="San Martín">San Martín</option>
+                <option value="Tacna">Tacna</option>
+                <option value="Tumbes">Tumbes</option>
+                <option value="Ucayali">Ucayali</option>
+                
+            </select>
+            
+            <label for="destino">Clase:</label>
+            <select id="destino" name="destino" required>
+                <option value="Amazonas">Amazonas</option>
+                <option value="Áncash">Áncash</option>
+                <option value="Apurímac">Apurímac</option>
+                <option value="Arequipa">Arequipa</option>
+                <option value="Ayacucho">Ayacucho</option>
+                <option value="Cajamarca">Cajamarca</option>
+                <option value="Callao">Callao</option>
+                <option value="Cusco">Cusco</option>
+                <option value="Huancavelica">Huancavelica</option>
+                <option value="Huánuco">Huánuco</option>
+                <option value="Ica">Ica</option>
+                <option value="Junín">Junín</option>
+                <option value="La Libertad">La Libertad</option>
+                <option value="Lambayeque">Lambayeque</option>
+                <option value="Lima">Lima</option>
+                <option value="Loreto">Loreto</option>
+                <option value="Madre de Dios">Madre de Dios</option>
+                <option value="Moquegua">Moquegua</option>
+                <option value="Pasco">Pasco</option>
+                <option value="Piura">Piura</option>
+                <option value="Puno">Puno</option>
+                <option value="San Martín">San Martín</option>
+                <option value="Tacna">Tacna</option>
+                <option value="Tumbes">Tumbes</option>
+                <option value="Ucayali">Ucayali</option>
+                <option value="Buenos aires">Buenos aires</option>
+                <option value="Nueva york">Nueva york</option>
+                <option value="Bangkok">Bangkok</option>
+                <option value="Paris">París</option>
+                <option value="Roma">Roma</option>
+                <option value="Sidney">Sidney</option>
+                <option value="Londres">Londres</option>
+                <option value="Tokio">Tokio</option>
+                
+            </select>
+            
+            <label for="fecha">Fecha:</label>
+            <input type="date" id="fecha" name="fecha" required>
+            
+            <label for="tipo_vuelo">Tipo de Vuelo:</label>
+            <select id="tipo_vuelo" name="tipo_vuelo" required></select>
+            
+            <label for="horario">Horario:</label>
+            <select id="horario" name="horario" required></select>
+            
+            <label for="clase">Clase:</label>
+            <select id="clase" name="clase" required>
+                <option value="economica">Económica</option>
+                <option value="premium">Premium</option>
+                <option value="ejecutiva">Ejecutiva</option>
+            </select>
+            
+            <label for="moneda">Moneda:</label>
+            <select id="moneda" name="moneda" required>
+                <option value="soles">Soles</option>
+                <option value="dolares">Dólares</option>
+            </select>
+            <h3>Elija los asinetos</h3>
+            <div class="seat-map">
+                <div class="seat">A1</div>
+                <div class="seat">A2</div>
+                <div class="seat">A3</div>
+                <div class="seat">A4</div>
+                <div class="seat">A5</div>
+                <div class="seat">A6</div>
+                <div class="seat">A7</div>
+                <div class="seat">A8</div>
+                <div class="seat">B1</div>
+                <div class="seat">B2</div>
+                <div class="seat">B3</div>
+                <div class="seat">B4</div>
+                <div class="seat">B5</div>
+                <div class="seat">B6</div>
+                <div class="seat">B7</div>
+                <div class="seat">B8</div>
+                <div class="seat">C1</div>
+                <div class="seat">C2</div>
+                <div class="seat">C3</div>
+                <div class="seat">C4</div>
+                <div class="seat">C5</div>
+                <div class="seat">C6</div>
+                <div class="seat">C7</div>
+                <div class="seat">C8</div>
+                <div class="seat">D1</div>
+                <div class="seat">D2</div>
+                <div class="seat">D3</div>
+                <div class="seat">D4</div>
+                <div class="seat">D5</div>
+                <div class="seat">D6</div>
+                <div class="seat">D7</div>
+                <div class="seat">D8</div>
+                <div class="seat">E1</div>
+                <div class="seat">E2</div>
+                <div class="seat">E3</div>
+                <div class="seat">E4</div>
+                <div class="seat">E5</div>
+                <div class="seat">E6</div>
+                <div class="seat">E7</div>
+                <div class="seat">E8</div>
+                <div class="seat">F1</div>
+                <div class="seat">F2</div>
+                <div class="seat">F3</div>
+                <div class="seat">F4</div>
+                <div class="seat">F5</div>
+                <div class="seat">F6</div>
+                <div class="seat">F7</div>
+                <div class="seat">F8</div>
+                <div class="seat">G1</div>
+                <div class="seat">G2</div>
+                <div class="seat">G3</div>
+                <div class="seat">G4</div>
+                <div class="seat">G5</div>
+                <div class="seat">G6</div>
+                <div class="seat">G7</div>
+                <div class="seat">G8</div>
+                <div class="seat">H1</div>
+                <div class="seat">H2</div>
+                <div class="seat">H3</div>
+                <div class="seat">H4</div>
+                <div class="seat">H5</div>
+                <div class="seat">H6</div>
+                <div class="seat">H7</div>
+                <div class="seat">H8</div>
+                
+            </div>
+            
+            <input type="hidden" id="asientos" name="asientos">
+            <label for="tarjeta">Número de Tarjeta:</label>
+            <input type="text" id="tarjeta" name="tarjeta" required>
+            
+            <label for="expiracion">Fecha de Expiración:</label>
+            <input type="text" id="expiracion" name="expiracion" placeholder="MM/YY" pattern="(0[1-9]|1[0-2])\/([0-9]{2})" required>
+            
+            <label for="cvv">CVV:</label>
+            <input type="text" id="cvv" name="cvv" pattern="[0-9]{3,4}" required>
+
+            <div id="escalas" class="escalas"></div>
+            <div class="price" id="precio">Precio Total: S/. 0.00</div>
+            <div class="message" id="message"></div>
+            
+            <input type="submit" value="Boleta">
+        </form>
+    </main>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <a href="https://www.instagram.com/goplaceairline/" target="_blank" class="social-icon">
+                    <img src="instagram.png" alt="Instagram">
+                </a>
+                <a href="https://www.facebook.com/profile.php?id=61562936154988&mibextid=qi2Omg&rdid=pQWjlfLTvWsYz27n&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2FCo5dn1MjLCJoSS8o%2F%3Fmibextid%3Dqi2Omg" target="_blank" class="social-icon">
+                    <img src="facebook.png" alt="Facebook">
+                </a>
+                <a href="https://x.com/Go_Place_Air" target="_blank" class="social-icon">
+                    <img src="twitter.png" alt="Twitter">
+                </a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
