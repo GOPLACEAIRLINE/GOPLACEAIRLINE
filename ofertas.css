@@ -1,0 +1,134 @@
+body {
+    font-family: Arial, sans-serif;
+    background: url('ofertas.jpg') no-repeat center center fixed;
+    background-size: cover;
+    line-height: 1.6;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+h2 {
+    text-align: center;
+}
+.oferta {
+    border: 1px solid #ccc;
+    background: linear-gradient(to right, #49a7ffc6, #e8e7e7);
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+.oferta h3 {
+    margin-top: 0;
+}
+.oferta p {
+    margin-bottom: 10px;
+}
+.oferta button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.oferta button:hover {
+    background-color: #0056b3;
+}
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+input[type="text"], input[type="email"], input[type="tel"] {
+    width: calc(100% - 20px);
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+input[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+header {
+background: rgba(255, 255, 255, 0.8);
+padding: 10px 20px;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+nav {
+display: flex;
+align-items: center;
+}
+
+nav .logo img {
+width: 100px;
+height: auto;
+}
+
+nav ul {
+list-style: none;
+display: flex;
+gap: 15px;
+margin-left: 20px;
+flex-grow: 1;
+}
+
+nav a {
+text-decoration: none;
+color: #333;
+}
+
+nav .auth-buttons {
+margin-left: 500px;
+}
+
+nav button {
+margin-left: 10px;
+padding: 5px 10px;
+border: none;
+background-color: #0073e6;
+color: white;
+cursor: pointer;
+}
+.oferta img {
+    width: 300px;
+    height: 200px;
+    object-fit: cover; 
+}
+.footer-content {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(68, 65, 65, 0.815);
+}
+
+.footer-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-basis: 100%;
+}
+
+.footer-section .social-icon img {
+    width: 50px;
+    height: auto;
+    filter: grayscale(100%);
+    transition: filter 0.3s;
+}
+
+.footer-section .social-icon img:hover {
+    filter: grayscale(0%);
+}
